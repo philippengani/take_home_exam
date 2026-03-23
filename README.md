@@ -13,6 +13,32 @@ This repository contains the provided mock dependency APIs and a new pricing ser
 uv sync --all-groups
 ```
 
+## Run With Docker
+
+Start all five services with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+Call the pricing service from the host:
+
+```bash
+curl -X POST http://127.0.0.1:8005/price \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "partner_id": "partner-1",
+    "member_id": "member-1",
+    "product_id": "BUY"
+  }'
+```
+
+Stop and remove the containers:
+
+```bash
+docker compose down
+```
+
 ## Run The Mock APIs
 
 Start each mock service in its own terminal:
