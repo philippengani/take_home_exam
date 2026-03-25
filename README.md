@@ -10,7 +10,7 @@ This repository contains the provided mock dependency APIs and a new pricing ser
 ## Install
 
 ```bash
-uv sync --all-groups
+uv sync --locked --all-groups
 ```
 
 ## Run With Docker
@@ -71,9 +71,24 @@ curl -X POST http://127.0.0.1:8005/price \
 ## Quality Checks
 
 ```bash
-uv run ruff check
-uv run mypy
-uv run pytest
+uv sync --locked --all-groups
+uv run ruff check .
+uv run python -m mypy
+uv run python -m pytest -q
+```
+
+## Latency Notes
+
+The service keeps the response path lean by:
+
+- member and product lookups run in parallel via `asyncio.gather`
+- audit logging is scheduled after the response path, so it does not block pricing responses
+- outbound requests use a short configurable timeout to fail fast on slow upstreams
+
+Validate the assignment's `<300ms` latency target with a benchmark run against the local stack:
+
+```bash
+uv run python scripts/measure_price_latency.py
 ```
 
 ## Configuration
