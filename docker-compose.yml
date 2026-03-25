@@ -1,0 +1,45 @@
+services:
+  member-data:
+    build:
+      context: .
+      target: member-data
+    ports:
+      - "8001:8001"
+
+  product-info:
+    build:
+      context: .
+      target: product-info
+    ports:
+      - "8002:8002"
+
+  pricing-ml-model:
+    build:
+      context: .
+      target: pricing-ml-model
+    ports:
+      - "8003:8003"
+
+  audit-log:
+    build:
+      context: .
+      target: audit-log
+    ports:
+      - "8004:8004"
+
+  pricing-service:
+    build:
+      context: .
+      target: pricing-service
+    depends_on:
+      - member-data
+      - product-info
+      - pricing-ml-model
+      - audit-log
+    environment:
+      MEMBER_DATA_URL: http://member-data:8001/member-data
+      PRODUCT_INFO_URL: http://product-info:8002/product-info
+      PRICING_MODEL_URL: http://pricing-ml-model:8003/predict
+      AUDIT_LOG_URL: http://audit-log:8004/audit-log
+    ports:
+      - "8005:8005"
